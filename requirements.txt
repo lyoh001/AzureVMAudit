@@ -1,2 +1,4 @@
+aiohttp
 azure-functions
 azure-storage-blob
+pandas==1.5.3
