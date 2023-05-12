@@ -3,14 +3,16 @@ import base64
 import functools
 import logging
 import os
+import tempfile
 import time
 
 import aiohttp
 import azure.functions as func
+import numpy as np
 import pandas as pd
+from azure.storage.blob import BlobServiceClient
 
 df, rest_api_headers = pd.DataFrame(), ""
-CONN_STR = os.environ["CONN_STR"]
 
 
 def timer(func):
@@ -81,6 +83,26 @@ async def fetch(session, subscription_id):
         return (await response.json())["value"]
 
 
+def upload(df_temp, file_name):
+    with tempfile.TemporaryDirectory() as tempdir_path:
+        path = os.path.join(tempdir_path, f"{file_name}.csv")
+        df_temp.to_csv(path, index=False)
+        try:
+            blob_service_client = BlobServiceClient.from_connection_string(
+                os.environ["CONN_STR"]
+            )
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+        with open(path, "rb") as file_reader:
+            try:
+                blob_client = blob_service_client.get_blob_client(
+                    "raw", f"{file_name}.csv"
+                )
+                blob_client.upload_blob(file_reader, overwrite=True)
+            except Exception as e:
+                print(f"An error occurred: {str(e)}")
+
+
 @timer
 async def main(req: func.HttpRequest) -> func.HttpResponse:
     global df, rest_api_headers
@@ -104,13 +126,42 @@ async def main(req: func.HttpRequest) -> func.HttpResponse:
             headers=rest_api_headers,
         ) as response:
             df_mg = pd.json_normalize((await response.json())["value"])
+            df_mg = df_mg[df_mg["type"] == "/subscriptions"]
+            df_mg["id"] = df_mg["id"].str.split("/").str.get(2)
+            df_mg["mg0"] = (
+                df_mg["properties.parentDisplayNameChain"]
+                .astype(str)
+                .str.split(", '")
+                .str.get(-1)
+                .str.strip("'[]")
+            )
+            df_mg[["Management", "mg2", "Department", "mg4"]] = (
+                df_mg["mg0"].astype(str).str.split("_", expand=True)
+            )
+            df_mg = df_mg[df_mg["Management"].isin(["Cenitex", "Customer", "Tier"])]
+            df_mg["Department"].replace(
+                {np.nan: "Cenitex", "Dev": "Cenitex"}, inplace=True
+            )
+            df_mg["Management"].replace(
+                {
+                    "Cenitex": "Cenitex Managed",
+                    "Customer": "Customer Managed",
+                    "Tier": "T0",
+                },
+                inplace=True,
+            )
+            df_mg = df_mg[["id", "properties.displayName", "Management", "Department"]]
+            df_mg.columns = ["id", "subscriptionName", "management", "department"]
+            df_mg.reset_index(drop=True, inplace=True)
+            upload(df_mg, "df_mg")
 
         total_resources = await asyncio.gather(
             *(fetch(session, subscription_id) for subscription_id in df_mg["id"])
         )
-        df = pd.concat(
+        df_total = pd.concat(
             [pd.json_normalize(resources) for resources in total_resources],
             ignore_index=True,
         )
+        upload(df_total, "df_total")
 
-    return func.HttpResponse(status_code=200, body=f"Ready.")
+    return func.HttpResponse(status_code=200, body=f"Completed.")
