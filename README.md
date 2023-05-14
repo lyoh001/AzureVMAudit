@@ -13,7 +13,7 @@ The data pipeline makes use of the following Azure services:
 ### 2.1 Logical System Component Overview
 The logical architecture of the Azure Virtual Machine Audit project is illustrated in the following diagram:
 
-![Figure 2: Logical Architecture Overview](./images/workflow_diagram.png)
+![Figure 2: Logical Architecture Overview](./images/workflow.png)
 
 The diagram represents the various system components and their interactions within the data pipeline. Each component plays a specific role in the auditing process.
 
