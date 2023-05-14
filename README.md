@@ -8,7 +8,6 @@ The data pipeline makes use of the following Azure services:
 - Azure Databricks
 - Azure Functions
 - Azure Data Lake
-- Azure SQL
 
 ## 2. Logical Architecture
 ### 2.1 Logical System Component Overview
@@ -28,7 +27,4 @@ Here's a brief description of each component:
 
 - **Azure Data Lake**: This is a scalable and secure storage solution that allows you to store and analyze large amounts of unstructured and structured data. In the context of this project, Azure Data Lake is used for storing the audit logs, virtual machine data, and other relevant information.
 
-- **Azure SQL**: Azure SQL is a fully managed relational database service. It is used for storing and querying structured data, such as audit results, metadata, or reference data used in the auditing process.
-
 These components work together to create a comprehensive and efficient data pipeline for auditing virtual machines in Azure.
-
