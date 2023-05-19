@@ -51,7 +51,7 @@ async def main(req: func.HttpRequest) -> func.HttpResponse:
 
             async with session.post(
                 url=os.environ["LOGICAPP_URL"],
-                json={"attachment": await blob_client.download_blob().readall()},
+                json={"attachment": blob_client.download_blob().content_as_text()},
             ) as response:
                 logging.info(response.status)
 
