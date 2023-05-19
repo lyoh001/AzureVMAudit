@@ -47,7 +47,7 @@ async def main(req: func.HttpRequest) -> func.HttpResponse:
             blob_service_client = BlobServiceClient.from_connection_string(
                 os.environ["CONN_STR"]
             )
-            blob_client = blob_service_client.get_blob_client("final", "df.csv")
+            blob_client = blob_service_client.get_blob_client("final", "vmaudit.csv")
 
             async with session.post(
                 url=os.environ["LOGICAPP_URL"],
