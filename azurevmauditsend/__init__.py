@@ -7,6 +7,7 @@ import time
 import aiohttp
 
 import azure.functions as func
+from azure.storage.blob import BlobServiceClient
 
 
 def timer(func):
@@ -41,10 +42,22 @@ def timer(func):
 @timer
 async def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("*******Starting main function*******")
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            os.environ["LOGICAPP_URL"],
-        ) as response:
-            logging.info(response.status)
+    try:
+        async with aiohttp.ClientSession() as session:
+            blob_service_client = BlobServiceClient.from_connection_string(
+                os.environ["CONN_STR"]
+            )
+            blob_client = blob_service_client.get_blob_client("final", "df.csv")
 
-    return func.HttpResponse(status_code=200, body=f"Completed.")
+            async with session.post(
+                url=os.environ["LOGICAPP_URL"],
+                json={"attachment": await blob_client.download_blob().readall()},
+            ) as response:
+                logging.info(response.status)
+
+        return func.HttpResponse(status_code=200, body="Completed.")
+
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}")
+
+        return func.HttpResponse(status_code=500, body="Error occurred.")
