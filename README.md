@@ -38,7 +38,7 @@ The Email Notification Component is a function that is invoked at the end of an 
 The function performs the following tasks:
 
 - **Triggers a Logic App**: The function is responsible for initiating a Logic App that handles the email notification process.
-- **Sends Email Notifications**: Once the Logic App is triggered, it takes care of sending email notifications based on the configured logic and templates.
+- **Sends Email Notifications**: Once the Logic App is triggered, it takes care of sending email notifications with csv file attached based on the configured logic and templates.
 
 #### Usage
 To use the Email Notification Component in your ETL pipeline, follow these steps:
