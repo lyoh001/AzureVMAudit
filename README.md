@@ -1,4 +1,5 @@
 # Azure Virtual Machine Audit
+
 ## 1. Introduction
 ### 1.1 Overview
 The Azure Virtual Machine Audit project is a modernized data pipeline that utilizes various Azure services to perform auditing tasks on virtual machines. This README.md file provides an overview of the project, its logical architecture, and the components involved.
@@ -27,6 +28,8 @@ Here's a brief description of each component:
 
 - **Azure Data Lake**: This is a scalable and secure storage solution that allows you to store and analyze large amounts of unstructured and structured data. In the context of this project, Azure Data Lake is used for storing the audit logs, virtual machine data, and other relevant information.
 
+- **ML Training**: This service is responsible for training and building a machine learning model for forecasting cloud consumption and deploying it to a web application. [Notebook for Building Machine Learning Model](https://github.com/lyoh001/AzureStaticWebApps/blob/main/mlcloudaudit/notebook/notebook.ipynb)
+
 These components work together to create a comprehensive and efficient data pipeline for auditing virtual machines in Azure.
 
 ### 2.2 Email Notification Component
@@ -38,7 +41,8 @@ The Email Notification Component is a function that is invoked at the end of an 
 The function performs the following tasks:
 
 - **Triggers a Logic App**: The function is responsible for initiating a Logic App that handles the email notification process.
-- **Sends Email Notifications**: Once the Logic App is triggered, it takes care of sending email notifications with csv file attached based on the configured logic and templates.
+
+- **Sends Email Notifications**: Once the Logic App is triggered, it takes care of sending email notifications with a CSV file attached based on the configured logic and templates.
 
 #### Usage
 To use the Email Notification Component in your ETL pipeline, follow these steps:
@@ -50,11 +54,5 @@ A configured Logic App that handles the email notification process.
 Ensure that the function is invoked at the end of the pipeline, after the ETL process is completed.
 - **Configuration**: Configure the Email Notification Component: Provide the necessary parameters or inputs required by the function.
 Set up the Logic App's endpoint or trigger information so that the function can invoke it correctly.
-- **Testing**: Test the integration and functionality of the Email Notification Component: Run ETL pipeline and verify that the function is invoked successfully. Check the Logic App's execution history and email notifications to ensure they are sent as expected.
 
-### 2.3 Power BI Dashboard Overview
-![Figure 2.3.2: Power BI Dashboard Overview](images/powerbi.png)
-The Power BI Dashboard is an interactive visualization tool that presents the final processed data from the Azure Data ETL pipeline. It enables users to explore, analyze, and gain valuable insights from the data. The dashboard is designed to provide a user-friendly interface with intuitive visuals, allowing stakeholders to make informed decisions based on the data.
-![Figure 2.3.1: Power BI workspace Overview](images/workspace.png)
-
-The Power BI Dashboard is refreshed daily to ensure the information presented is up-to-date. The data is automatically loaded from the Azure Data ETL pipeline into the Power BI workspace, where it is transformed into meaningful visualizations.
+- **Testing**: Test the integration and functionality of the Email Notification Component: Run the ETL pipeline and verify that
